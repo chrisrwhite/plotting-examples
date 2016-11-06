@@ -1,0 +1,22 @@
+#!/usr/bin/env python2
+# -*- coding: utf-8 -*-
+"""
+Created on Wed Nov  2 22:56:53 2016
+
+@author: white08057
+"""
+from pandas_datareader import data, wb
+import pandas as pd
+import time
+from ggplot import *
+
+stocks = [ 'GOOG', 'MSFT', 'LNKD', 'YHOO', 'FB', 'GOOGL','HPQ','AMZN'] # stock list
+
+# get stock price function #
+def get_px(stock, start, end):
+    return wb.get_data_yahoo(stock, start, end)['Adj Close']
+
+# dataframe of equity prices   
+px = pd.DataFrame({n: get_px(n, '1/1/2014', time.strftime("%d/%m/%Y")) for n in stocks})
+
+px.head()

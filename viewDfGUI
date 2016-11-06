@@ -1,0 +1,28 @@
+#!/usr/bin/env python2
+# -*- coding: utf-8 -*-
+"""
+Created on Sun Nov  6 14:15:35 2016
+
+@author: white08057
+"""
+
+from ggplot import * 
+import matplotlib.pyplot as plt
+
+import seaborn as sns
+import pandas as pd
+import numpy as np
+import math as math
+import time
+import string
+
+
+filename = '/Users/white08057/GitHub/ggplot2/data-raw/economics.csv'
+
+df  = read_csv(filename, index_col = 0,header = 0)
+self.datatable = QtGui.QTableWidget(parent=self)
+self.datatable.setColumnCount(len(df.columns))
+self.datatable.setRowCount(len(df.index))
+for i in range(len(df.index)):
+    for j in range(len(df.columns)):
+        self.datatable.setItem(i,j,QtGui.QTableWidgetItem(str(df.iget_value(i, j))))

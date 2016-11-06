@@ -1,0 +1,256 @@
+#!/usr/bin/env python2
+# -*- coding: utf-8 -*-
+"""
+Created on Wed Nov  2 21:43:40 2016
+
+@author: white08057
+"""
+#import the packages i need to write my program
+#installation for ggplot : cmd: pip install -U ggplot
+#or conda install -c conda-forge ggplot
+#documentation: https://pypi.python.org/pypi/ggplot/
+
+from ggplot import * 
+import matplotlib.pyplot as plt
+
+import seaborn as sns
+import pandas as pd
+import numpy as np
+import math as math
+import time
+import string
+
+
+'''Options:
+    The Options (in ~Descending Order of Subjective Complexity)
+    
+    matplotlib -r(for really customized visually plots)
+    pandas - mostly for dataframes (plots are slightly more easy than matlablib)
+    seaborn - makes hard things (in matlabplot) easy, also good for statistical transformation
+    yhat’s ggplot - similar to R
+    Altair = similar to ggplot (pythons version essentially)
+    
+    
+    
+'''
+
+
+
+
+file = '/Users/white08057/GitHub/ggplot2/data-raw/economics.csv'
+
+df = pd.read_csv(file) #, header=None,index_col='datetime',parse_dates = {'datetime': [2,3]}, date_parser=lambda x: pd.datetime.strptime(x, '%Y %m'))  #'%Y %m %d %H'
+df.info()
+#function to convertthe datetime index to be a column in the pandas dataframe in order to plot correctly when switching from wide to long format.
+'''This piece of code below officially works!!!!!'''
+df['date'] = df['date'].astype('datetime64[ns]')
+
+
+ts = df
+
+
+
+'''
+# First, make some random data
+x = np.random.normal(loc = 5, scale = 2, size = length)
+y = x + np.random.normal(loc = 0, scale = 2, size = length)
+ 
+# Make these into a pandas dataframe. I do this because
+# more often than not, I read in a pandas dataframe, so this
+# shows how to use a pandas dataframe to plot in ggplot
+testData = pd.DataFrame( {"letter":letters, 'x':x, 'y':y} )
+# it looks just like a dataframe from R
+print(testData)
+
+ts = testData #want to sort the data alphabetically
+
+# MATPLOTLIB
+fig, ax = plt.subplots(1, 1,
+                       figsize=(7.5, 5))
+ 
+for k in ts.letter.unique():
+    tmp = ts[ts.letter == k]
+    ax.plot(tmp.x, tmp.y, label=k)
+ 
+ax.set(xlabel='Date',
+       ylabel='Value',
+       title='Random Timeseries')    
+ 
+ax.legend(loc=2)
+fig.autofmt_xdate()
+
+'''
+
+# SEABORN
+g = sns.FacetGrid(ts, size=5, aspect=1.5)
+g.map(plt.scatter, 'date', 'pop').add_legend()
+g.map(plt.plot, 'date', 'unemploy').add_legend()
+g.ax.set(xlabel='Date',
+         ylabel='Population',
+         title='Random Timeseries')
+g.fig.autofmt_xdate()
+
+
+''' how would you faucet a scatter plot?'''
+
+meat = meat.dropna(thresh=800, axis=1) # drop columns that have fewer than 800 observations
+ts = meat.set_index(['date'])
+ts.head(10)
+
+
+#aggregate time and date data
+ts.groupby(ts.index.year).sum().head(10)
+
+#grouping by a specific decade:
+the1940s = ts.groupby(ts.index.year).sum().ix['1940-01-01':'1949-12-31']
+
+#what if we wanted to look at all the deacades:
+def floor_decade(date_value):
+    "Takes a date. Returns the decade."
+    return (date_value.year // 10) * 10
+
+pd.to_datetime('2013-10-09')
+
+
+floor_decade(_)
+
+
+ts.groupby(floor_decade).sum()
+
+#new data frame for just the 1940's
+the1940s.sum().reset_index(name='meat sums in the 1940s')
+
+#bar plotting time!!!!!
+by_decade = ts.groupby(floor_decade).sum()
+
+by_decade.index.name = 'year'
+
+by_decade = by_decade.reset_index()
+
+
+# SEABORN bar plot
+g = sns.factorplot(x='year', y='beef', hue='year',
+                   data=by_decade, kind='bar',
+                   #order=['First', 'Second', 'Third'],
+                   size=7.5, aspect=1.5) #these affect the size of the plot window
+g.ax.set_title('Beef slaugheterd by decade')
+
+# SEABORN bar plot now with each kind of meat this MELTING works!!!!! :D
+by_decade_long = pd.melt(by_decade, id_vars="year")
+
+g = sns.factorplot(x='year', y='value', hue='variable',
+                   data=by_decade_long, kind='bar',
+                   #order=['First', 'Second', 'Third'],
+                   size=7.5, aspect=1.5) #these affect the size of the plot window
+
+                   
+#seaborn with meat plot time series:
+
+   
+from ggplot import meat
+meat_lng = pd.melt(meat, id_vars=['date'])
+
+
+g = sns.FacetGrid(meat_lng, hue='variable', size=5, aspect=1.5)
+g.map(plt.plot, 'date', 'value').add_legend()
+g.ax.set(xlabel='Date',
+         ylabel='Value',
+         title='Random Timeseries')
+g.fig.autofmt_xdate()
+
+
+#lets try smoothing the data sets using a Savitzky–Golay filter
+# https://en.wikipedia.org/wiki/Savitzky%E2%80%93Golay_filter
+
+
+from savitzky_golay_filter.py import savitzky_golay
+print(savitzky_golay())
+
+#meat_new = pd.melt(meat, id_vars=['date'])
+meat_new = meat[['date','beef']]
+
+meat_new['beef'] = savitzky_golay(meat_new['beef'], 51,3)
+
+
+
+
+
+#Notes: passing in "Kind" for hue will give you several different lines
+'''
+# SEABORN
+g = sns.FacetGrid(ts, hue='kind', size=5, aspect=1.5)
+g.map(plt.plot, 'dt', 'value').add_legend()
+g.ax.set(xlabel='Date',
+         ylabel='Value',
+         title='Random Timeseries')
+g.fig.autofmt_xdate()
+'''
+
+
+
+
+
+
+
+
+
+'''
+    
+
+
+
+
+print(df.head())
+df.info()
+plt2 = ggplot(aes(x = 'date', y='pop'),data = df) +\
+        geom_line(color = 'purple', size =1.5, alpha = 0.75) +\
+        stat_smooth(color = 'blue',size =2.0, span = 0.15) +\
+        scale_x_date(labels = date_format("%m/%d/%y")) +\
+        xlab('Year') + ylab('Head of Cattle Slaughtered') +\
+        ggtitle('Beef Consumption over Time') #+\
+        #theme_seaborn() #cant get this to work just yet
+print(plt2)
+    
+
+'plotting 2 lines'
+plt3 = ggplot(aes(x= 'date'),df) +\
+          geom_line(aes(y = 'pop', colour = "blue")) +\
+          geom_line(aes(y = 'unemploy', colour = "green"))
+
+print(plt3)
+
+'plotting 2 lines'
+plt4 = ggplot(aes(x= 'date'),df) +\
+          geom_line(aes(y = 'pop', colour = "blue")) +\
+          geom_line(aes(y = 'unemploy', colour = "green"))
+          
+print(plt4)
+
+
+
+'''
+
+''' now that we can plot, lets explore other options:
+    
+https://dansaber.wordpress.com/2016/10/02/a-dramatic-tour-through-pythons-data-visualization-landscape-including-ggplot-and-altair/
+
+
+
+df_new = dateConvert(df_first)
+#pd.to_datetime(df_first['date'])
+
+df_new.info()
+#Df_convert = dateConvert(Df)
+
+#qplot(df.pce)
+
+#data = pd.melt(Df_convert, id_vars='date').dropna() # Here is the method I use to format the data in the long format. Please note the use of 'Date' as the id_vars.
+
+
+pv_plot = ggplot(df, aes('date','pop')) + \
+    geom_point(color='black') 
+print(pv_plot)
+
+
+
+'''
